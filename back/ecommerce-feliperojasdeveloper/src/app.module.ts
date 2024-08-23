@@ -8,12 +8,22 @@ import { AuthController } from './auth/auth.controller';
 import { UsersService } from './users/users.service';
 import { ProductsService } from './products/products.service';
 import { AuthService } from './auth/auth.service';
-import { UserRepository } from './users/users.repository';
-import { ProductRepository } from './products/products.repository';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import typeormConfig from './config/typeorm';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { OrdersModule } from './orders/orders.module';
+import { OrderDetailsModule } from './order-details/order-details.module';
+import { CategoriesModule } from './categories/categories.module';
 
 @Module({
-  imports: [UsersModule, ProductsModule, AuthModule],
+  imports: [ConfigModule.forRoot({
+    isGlobal: true,
+    load: [typeormConfig],
+  }), TypeOrmModule.forRootAsync({
+    inject: [ConfigService],
+    useFactory: (configService: ConfigService) => configService.get('typeorm')
+  }), UsersModule, ProductsModule, AuthModule, OrdersModule, OrderDetailsModule, CategoriesModule],
   controllers: [UsersController, ProductsController, AuthController],
-  providers: [UsersService, ProductsService, AuthService, UserRepository, ProductRepository],
+  providers: [UsersService, ProductsService, AuthService],
 })
-export class AppModule {}
+export class AppModule { }

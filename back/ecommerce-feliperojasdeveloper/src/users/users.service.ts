@@ -4,29 +4,25 @@ import { User } from "./entities/user.entity";
 
 @Injectable()
 export class UsersService {
-    constructor(private readonly userRepository: UserRepository) { }
+    constructor(private readonly userRepository: UserRepository) {}
+
     getUsers(page: number, limit: number) {
-        return this.userRepository.findAll(page, limit).map(user => {
-            const { password, ...userWithoutPassword } = user;
-            return userWithoutPassword;
-        });
+        return this.userRepository.getUsers(page, limit);
     }
 
-    getUserById(id: number) {
-        const user = this.userRepository.findById(id);
-        const { password, ...userWithoutPassword } = user;
-        return userWithoutPassword;
+    getUserById(id: string) {
+        return this.userRepository.getUserById(id);
     }
 
-    create(createdUser: Omit<User, 'id'>) {
-        return this.userRepository.save(createdUser);
+    createUser(createdUser: User) {
+        return this.userRepository.createUser(createdUser);
     }
 
-    updateUser(id: number, updatedUser: Partial<User>) {
-        return this.userRepository.update(id, updatedUser);
-    }
+    // updateUser(id: number, updatedUser: Partial<User>) {
+    //     return this.userRepository.update(id, updatedUser);
+    // }
 
-    deleteUser(id: number) {
-        return this.userRepository.delete(id);
-    }
+    // deleteUser(id: number) {
+    //     return this.userRepository.delete(id);
+    // }
 }

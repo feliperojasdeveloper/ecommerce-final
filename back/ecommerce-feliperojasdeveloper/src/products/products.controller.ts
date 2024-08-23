@@ -4,6 +4,7 @@ import { Product } from "./entities/product.entity";
 import { Response } from "express";
 import { validateProduct } from "src/utils/validate";
 import { AuthGuard } from "src/guards/auth.guard";
+import * as data from '../utils/data.json'
 
 @Controller('products')
 export class ProductsController {
@@ -12,41 +13,31 @@ export class ProductsController {
     @Get()
     @HttpCode(HttpStatus.OK)
     getProducts(@Query('page') page: number, @Query('limit') limit: number) {
-        return this.productsService.getProducts(page, limit);
+        if(page && limit){
+            return this.productsService.getProducts(page, limit);
+        }
+        return this.productsService.getProducts(1,5);
+
+    }
+
+    @Get('seeder')
+    addProducts(){
+        return this.productsService.addProducts(data);
     }
 
     @Get(':id')
     @HttpCode(HttpStatus.OK)
     getProductById(@Param('id') id: string) {
-        return this.productsService.getProductById(Number(id));
-    }
-
-    @Post()
-    @HttpCode(HttpStatus.CREATED)
-    @UseGuards(AuthGuard)
-    createProduct(@Body() productCreated: Product) {
-        if (validateProduct(productCreated)) {
-            const product = this.productsService.create(productCreated);
-            return product.id
-        }
-        return "El producto no pudo ser creado";
+        return this.productsService.getProductById(id);
     }
 
     @Put(':id')
     @HttpCode(HttpStatus.OK)
-    @UseGuards(AuthGuard)
     updateProduct(@Param('id') id: string, @Body() updatedProduct: Partial<Product>) {
         if (validateProduct(updatedProduct)) {
-            this.productsService.updateProduct(Number(id), updatedProduct);
+            this.productsService.updateProduct(id, updatedProduct);
             return id;
         }
         return "El producto no pudo ser actualizado";
-    }
-
-    @Delete(':id')
-    @HttpCode(HttpStatus.OK)
-    @UseGuards(AuthGuard)
-    deleteProduct(@Param('id') id: string) {
-        return this.productsService.deleteProduct(Number(id));
     }
 }
