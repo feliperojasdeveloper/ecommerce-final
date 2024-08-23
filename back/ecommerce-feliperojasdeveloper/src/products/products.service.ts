@@ -4,27 +4,21 @@ import { Product } from "./entities/product.entity";
 
 @Injectable()
 export class ProductsService {
-    constructor(private readonly productRepository: ProductRepository) { }
+    constructor(private productRepository: ProductRepository) {}
+
     getProducts(page: number, limit: number) {
-        return this.productRepository.findAll(page, limit);
+        return this.productRepository.getProducts(page, limit);
     }
 
-    getProductById(id: number) {
-        return this.productRepository.findById(id);
+    getProductById(id: string) {
+        return this.productRepository.getProductById(id);
     }
 
-    create(createdProduct: Omit<Product, 'id'>) {
-        return this.productRepository.save(createdProduct);
-
+    addProducts() {
+        return this.productRepository.addProducts();
     }
 
-    updateProduct(id: number, updatedProduct: Partial<Product>) {
-        return this.productRepository.update(id, updatedProduct);
+    updateProduct(id: string, updatedProduct: Partial<Product>) {
+        return this.productRepository.updateProduct(id, updatedProduct);
     }
-
-    deleteProduct(id: number) {
-        return this.productRepository.delete(id);
-    }
-
-
 }
