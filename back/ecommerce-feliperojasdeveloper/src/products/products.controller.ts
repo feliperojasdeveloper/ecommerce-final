@@ -22,7 +22,7 @@ export class ProductsController {
 
     @Get('seeder')
     addProducts(){
-        return this.productsService.addProducts(data);
+        return this.productsService.addProducts();
     }
 
     @Get(':id')
