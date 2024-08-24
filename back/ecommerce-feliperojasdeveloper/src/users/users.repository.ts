@@ -16,7 +16,10 @@ export class UserRepository {
     }
 
     async getUserById(id: string): Promise<User> {
-        return this.userRepository.findOneBy({ id });
+        return await this.userRepository.findOne({ 
+            where: {id},
+            relations: ['orders'] 
+        });
     }
 
     async createUser(user: User) {
