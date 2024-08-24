@@ -21,5 +21,5 @@ export class Order {
     user: User;
 
     @OneToOne(() => OrderDetail, (orderDetail) => orderDetail.order)
-    orderDetails: Order
+    orderDetails: OrderDetail;
 }

@@ -3,17 +3,21 @@ import { CreateOrderDto } from './dto/create-order.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Order } from './entities/order.entity';
 import { Repository } from 'typeorm';
+import { UserRepository } from 'src/users/users.repository';
+import { OrderRepository } from './order.repository';
 
 @Injectable()
 export class OrdersService {
 
-  constructor(@InjectRepository(Order) private ordersRepository: Repository<Order>){}
+  constructor(private orderRepository: OrderRepository) { }
 
-  addOrder(createOrderDto: CreateOrderDto) {
-    return 'This action adds a new order';
+  addOrder(product: CreateOrderDto) {
+    console.log(this.orderRepository);
+    const {userId, products} = product;
+    return this.orderRepository.addOrder(userId, products);
   }
 
-  getOrder() {
-    return `This action returns all orders`;
+  getOrder(id: string) {
+    return this.orderRepository.getOrder( id );
   }
 }
