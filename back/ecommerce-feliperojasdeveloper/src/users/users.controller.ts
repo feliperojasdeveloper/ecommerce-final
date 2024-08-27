@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, Query, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Param, ParseUUIDPipe, Post, Put, Query, UseGuards } from "@nestjs/common";
 import { UsersService } from "./users.service";
 import { User } from "./entities/user.entity";
 import { validateUser } from "src/utils/validate";
@@ -14,50 +14,97 @@ export class UsersController {
     @HttpCode(HttpStatus.OK)
     @UseGuards(AuthGuard)
     getUsers(@Query('page') page: number, @Query('limit') limit: number) {
-        if (page && limit) {
-            return this.usersService.getUsers(page, limit);
+        try {
+            if (page && limit) {
+                return this.usersService.getUsers(page, limit);
+            }
+            return this.usersService.getUsers(1, 5);
+        } catch (error) {
+            throw new HttpException({
+                status: HttpStatus.INTERNAL_SERVER_ERROR,
+                error: "Error al obtener usuarios"
+            },
+                500
+            );
         }
-        return this.usersService.getUsers(1, 5);
     }
 
     getUserByEmail(@Param('email') email: string) {
-        return this.usersService.getUserByEmail(email)
+        try {
+            const user = this.usersService.getUserByEmail(email)
+            if (!user) {
+                throw new HttpException('Usuario no encontrado', HttpStatus.NOT_FOUND);
+            }
+            return user;
+        } catch (error) {
+            throw new HttpException('Error al obtener usuario por email', HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @Get(':id')
     @HttpCode(HttpStatus.OK)
     @UseGuards(AuthGuard)
-    getUserById(@Param('id') id: string) {
-        return this.usersService.getUserById(id);
+    getUserById(@Param('id', ParseUUIDPipe) id: string) {
+        try {
+            const user = this.usersService.getUserById(id);
+            if (!user) {
+                throw new HttpException('Usuario no encontrado', HttpStatus.NOT_FOUND);
+            }
+            return user;
+        } catch (error) {
+            throw new HttpException('Error al obtener usuario por Id', HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
     }
 
     @Post()
     @HttpCode(HttpStatus.CREATED)
     createUser(@Body() userCreated: CreateUserDto) {
-        if (validateUser(userCreated)) {
-            const user = this.usersService.createUser(userCreated)
-            return user;
+        try {
+            if (validateUser(userCreated)) {
+                const user = this.usersService.createUser(userCreated);
+                if (!user) {
+                    throw new HttpException('No se pudo crear el usuario', HttpStatus.BAD_REQUEST);
+                }
+                return user;
+            }
+            throw new HttpException('Datos de usuario inválidos', HttpStatus.BAD_REQUEST);
+        } catch (error) {
+            throw new HttpException('Error al crear usuario', HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return "El usuario no pudo ser creado";
     }
 
     @Put(':id')
     @HttpCode(HttpStatus.OK)
     @UseGuards(AuthGuard)
-    updateUser(@Param('id') id: string, @Body() updatedUser: Partial<CreateUserDto>) {
-        if (validateUser(updatedUser)) {
-            this.usersService.updateUser(id, updatedUser);
-            return id;
+    updateUser(@Param('id', ParseUUIDPipe) id: string, @Body() updatedUser: Partial<CreateUserDto>) {
+        try {
+            if (validateUser(updatedUser)) {
+                const result = this.usersService.updateUser(id, updatedUser);
+                if (!result) {
+                    throw new HttpException('Usuario no encontrado o no se pudo actualizar', HttpStatus.NOT_FOUND);
+                }
+                return id;
+            }
+            throw new HttpException('Datos de usuario inválidos', HttpStatus.BAD_REQUEST);
+        } catch (error) {
+            throw new HttpException('Error al actualizar usuario', HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return "No se pudo actualizar el usuario";
     }
 
-    // @Delete(':id')
-    // @HttpCode(HttpStatus.OK)
-    // @UseGuards(AuthGuard)  
-    // deleteUser(@Param('id') id: string) {
-    //     this.usersService.deleteUser(Number(id));
-    //     return id;
-    // }
+    @Delete(':id')
+    @HttpCode(HttpStatus.OK)
+    @UseGuards(AuthGuard)
+    deleteUser(@Param('id', ParseUUIDPipe) id: string) {
+        try {
+            const resultado = this.usersService.deleteUser(id);
+            if (!resultado) {
+                throw new HttpException('Usuario no encontrado o no se pudo eliminar', HttpStatus.NOT_FOUND);
+            }
+            return id;
+        } catch (error) {
+            throw new HttpException('Error al eliminar usuario', HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 }

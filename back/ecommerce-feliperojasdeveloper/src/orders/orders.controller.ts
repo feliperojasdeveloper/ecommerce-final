@@ -1,20 +1,35 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseUUIDPipe, HttpException, HttpStatus } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
-import { UpdateOrderDto } from './dto/update-order.dto';
 
 @Controller('orders')
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) { }
 
   @Post()
-  addOrder(@Body() order: CreateOrderDto) {    
-    return this.ordersService.addOrder(order);
+  addOrder(@Body() order: CreateOrderDto) {
+    try {
+      const newOrder = this.ordersService.addOrder(order);
+      if (!newOrder) {
+        throw new HttpException('No se pudo crear la orden', HttpStatus.BAD_REQUEST);
+      }
+      return newOrder;
+    } catch (error) {
+      throw new HttpException('Error al crear la orden', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
-  @Get(':id')
+  @Get()
   getOrder(@Query('id') id: string) {
-    return this.ordersService.getOrder(id);
+    try {
+      const order = this.ordersService.getOrder(id);
+      if (!order) {
+        throw new HttpException('Orden no encontrada', HttpStatus.NOT_FOUND);
+      }
+      return order;
+    } catch (error) {
+      throw new HttpException('Error al obtener la orden', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
 }

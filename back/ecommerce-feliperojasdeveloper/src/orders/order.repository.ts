@@ -43,9 +43,7 @@ export class OrderRepository {
                 await this.productRepository.update(
                     { id: element.id },
                     { stock: product.stock - 1 },
-                );
-                console.log(product.price);
-                
+                );                
                 return product;
             }),
         );
@@ -53,10 +51,7 @@ export class OrderRepository {
         const orderDetail = new OrderDetail();
         orderDetail.price = Number(Number(total).toFixed(2));
         orderDetail.products = productsArray;
-        orderDetail.order = newOrder;
-
-        console.log(orderDetail.price);
-        
+        orderDetail.order = newOrder;      
 
 
         await this.orderDetailRepository.save(orderDetail);

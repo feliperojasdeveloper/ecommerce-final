@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Res, HttpStatus, HttpCode, Query, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, Put, Res, HttpStatus, HttpCode, Query, UseGuards, ParseUUIDPipe, HttpException } from "@nestjs/common";
 import { ProductsService } from "./products.service";
 import { Product } from "./entities/product.entity";
 import { validateProduct } from "src/utils/validate";
@@ -13,31 +13,53 @@ export class ProductsController {
     @Get()
     @HttpCode(HttpStatus.OK)
     getProducts(@Query('page') page: number, @Query('limit') limit: number) {
-        if(page && limit){
-            return this.productsService.getProducts(page, limit);
+        try {
+            if (page && limit) {
+                return this.productsService.getProducts(page, limit);
+            }
+            return this.productsService.getProducts(1, 5);
+        } catch (error) {
+            throw new HttpException('Error al obtener productos', HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return this.productsService.getProducts(1,5);
-
     }
 
     @Get('seeder')
-    addProducts(){
-        return this.productsService.addProducts();
+    addProducts() {
+        try {
+            return this.productsService.addProducts();
+        } catch (error) {
+            throw new HttpException('Error al agregar productos', HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @Get(':id')
     @HttpCode(HttpStatus.OK)
-    getProductById(@Param('id') id: string) {
-        return this.productsService.getProductById(id);
+    getProductById(@Param('id', ParseUUIDPipe) id: string) {
+        try {
+            const producto = this.productsService.getProductById(id);
+            if (!producto) {
+                throw new HttpException('Producto no encontrado', HttpStatus.NOT_FOUND);
+            }
+            return producto;
+        } catch (error) {
+            throw new HttpException('Error al obtener producto por ID', HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @Put(':id')
     @HttpCode(HttpStatus.OK)
-    updateProduct(@Param('id') id: string, @Body() updatedProduct: CreateProductDto) {
-        if (validateProduct(updatedProduct)) {
-            this.productsService.updateProduct(id, updatedProduct);
+    updateProduct(@Param('id', ParseUUIDPipe) id: string, @Body() updatedProduct: CreateProductDto) {
+        try {
+            if (!validateProduct(updatedProduct)) {
+                throw new HttpException('Datos de producto inválidos', HttpStatus.BAD_REQUEST);
+            }
+            const result = this.productsService.updateProduct(id, updatedProduct);
+            if (!result) {
+                throw new HttpException('Producto no encontrado o no se pudo actualizar', HttpStatus.NOT_FOUND);
+            }
             return id;
+        } catch (error) {
+            throw new HttpException('Error al actualizar producto', HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return "El producto no pudo ser actualizado";
     }
 }
