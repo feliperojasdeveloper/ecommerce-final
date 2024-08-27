@@ -12,7 +12,7 @@ const config = {
     username: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD,
     autoLoadEnities: true,
-    synchronize: true,
+    synchronize: false,
     logging: true,
     entities: ['dist/**/*.entity{.js,.ts}'],
     migrations: ['dist/migrations/*{.js,.ts}']
