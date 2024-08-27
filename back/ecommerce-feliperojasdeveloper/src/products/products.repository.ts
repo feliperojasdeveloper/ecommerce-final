@@ -59,10 +59,11 @@ export class ProductRepository {
     }
 
     async updateProduct(id: string, product: Partial<Product>){
+        const updatedProductId = await this.productsRepository.findOneBy({id});
+        if(!updatedProductId) {
+            throw new Error('Usuario no encontrado');
+        }
         await this.productsRepository.update(id, product);
-
-        const updatedProduct = await this.productsRepository.findOneBy({id});
-
-        return updatedProduct;
+        return updatedProductId;
     }
 }

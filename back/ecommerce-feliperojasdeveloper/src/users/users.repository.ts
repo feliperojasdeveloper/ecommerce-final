@@ -15,38 +15,37 @@ export class UserRepository {
         return users.slice(startIndex, startIndex + limit);
     }
 
-    async getUserById(id: string): Promise<User> {
-        return await this.userRepository.findOne({ 
-            where: {id},
-            relations: ['orders'] 
+    async getUserByEmail(email: string): Promise<User> {
+        return await this.userRepository.findOne({
+            where: { email }
         });
     }
 
-    async createUser(user: User) {
+    async getUserById(id: string): Promise<User> {
+        return await this.userRepository.findOne({
+            where: { id },
+            relations: ['orders']
+        });
+    }
+
+    async createUser(user: Partial<User>) {
         const newUser = await this.userRepository.create(user);
         const userBd = await this.userRepository.save(newUser);
         return userBd;
     }
 
-    // findByEmail(email: string): User | undefined {
-    //     return this.users.find((user)=> user.email === email);
-    // }
+    async update(id: string, updatedUser: Partial<User>): Promise<User> {
+        const userId = await this.userRepository.findOne({
+            where: {id}
+        })
+        if (!userId) {
+            throw new Error('Usuario no encontrado');
+        }  
+        const userUpdated = await this.userRepository.update(id, updatedUser);
+        console.log(userUpdated);
+        return userId;
+    }
 
-    // save(newUser: Omit<User, 'id'>): User {
-    //     const id = this.users.length + 1;
-    //     this.users = [...this.users, { id, ...newUser }];
-    //     return { id, ...newUser };
-    // }
-
-    // update(id: number, updatedUser: Partial<User>): User {
-    //     const userIndex = this.users.findIndex((user) => user.id === id);
-    //     if (userIndex === -1) {
-    //         throw new Error('Usuario no encontrado');
-    //     }
-    //     const user = this.users[userIndex];
-    //     this.users[userIndex] = { ...user, ...updatedUser };
-    //     return this.users[userIndex];
-    // }
 
     // delete(id: number): number {
     //     const userIndex = this.users.findIndex((user) => user.id === id);
