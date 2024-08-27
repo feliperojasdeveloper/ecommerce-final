@@ -12,15 +12,15 @@ export class OrderDetailsService {
     return `This action returns all orderDetails`;
   }
 
-  findOne(id: number) {
+  findOne(id: string) {
     return `This action returns a #${id} orderDetail`;
   }
 
-  update(id: number, updateOrderDetailDto: UpdateOrderDetailDto) {
+  update(id: string, updateOrderDetailDto: UpdateOrderDetailDto) {
     return `This action updates a #${id} orderDetail`;
   }
 
-  remove(id: number) {
+  remove(id: string) {
     return `This action removes a #${id} orderDetail`;
   }
 }

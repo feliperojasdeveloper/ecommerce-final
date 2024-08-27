@@ -12,7 +12,7 @@ export class UserRepository {
         const startIndex = (page - 1) * limit;
         const end = startIndex + +limit;
         const users = await this.userRepository.find();
-        return users.slice(startIndex, startIndex + limit);
+        return users.slice(startIndex, end);
     }
 
     async getUserByEmail(email: string): Promise<User> {
@@ -36,23 +36,25 @@ export class UserRepository {
 
     async update(id: string, updatedUser: Partial<User>): Promise<User> {
         const userId = await this.userRepository.findOne({
-            where: {id}
+            where: { id }
         })
         if (!userId) {
             throw new Error('Usuario no encontrado');
-        }  
+        }
         const userUpdated = await this.userRepository.update(id, updatedUser);
         console.log(userUpdated);
         return userId;
     }
 
 
-    // delete(id: number): number {
-    //     const userIndex = this.users.findIndex((user) => user.id === id);
-    //     if (userIndex === -1) {
-    //         throw new Error('Usuario no encontrado');
-    //     }
-    //     this.users.splice(userIndex, 1);
-    //     return id;
-    // }
+    async delete(id: string): Promise<string> {
+        const userId = await this.userRepository.findOne({
+            where: { id }
+        })
+        if (!userId) {
+            throw new Error('Usuario no encontrado');
+        }
+        await this.userRepository.delete(id)
+        return id;
+    }
 }

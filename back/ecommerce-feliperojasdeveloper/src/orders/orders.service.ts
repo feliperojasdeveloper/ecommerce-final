@@ -12,7 +12,6 @@ export class OrdersService {
   constructor(private orderRepository: OrderRepository) { }
 
   addOrder(product: CreateOrderDto) {
-    console.log(this.orderRepository);
     const {userId, products} = product;
     return this.orderRepository.addOrder(userId, products);
   }

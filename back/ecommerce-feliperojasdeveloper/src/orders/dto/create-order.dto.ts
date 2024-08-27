@@ -12,6 +12,5 @@ export class CreateOrderDto {
     @IsArray()
     @ArrayMinSize(1)
     @ValidateNested({each: true})
-    @Type(() => ProductDto)
     products: Partial<Product[]>;
 }
