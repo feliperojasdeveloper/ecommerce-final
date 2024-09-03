@@ -19,6 +19,9 @@ export class CreateUserDto {
     })
     password: string;
 
+    @IsString()
+    confirmpassword: string;
+
     @IsNumber()
     phone: number;
 

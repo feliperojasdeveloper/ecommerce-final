@@ -15,6 +15,8 @@ import { OrdersModule } from './orders/orders.module';
 import { OrderDetailsModule } from './order-details/order-details.module';
 import { CategoriesModule } from './categories/categories.module';
 import { FilesUploadModule } from './files-upload/files-upload.module';
+import { JwtModule } from '@nestjs/jwt';
+
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -23,7 +25,12 @@ import { FilesUploadModule } from './files-upload/files-upload.module';
   }), TypeOrmModule.forRootAsync({
     inject: [ConfigService],
     useFactory: (configService: ConfigService) => configService.get('typeorm')
-  }), UsersModule, ProductsModule, AuthModule, OrdersModule, OrderDetailsModule, CategoriesModule, FilesUploadModule],
+  }), UsersModule, ProductsModule, AuthModule, OrdersModule, OrderDetailsModule, CategoriesModule, FilesUploadModule,
+  JwtModule.register({
+    global: true,
+    signOptions: {expiresIn: '1h'},
+    secret: process.env.JWT_SECRET,
+  })],
   controllers: [UsersController, ProductsController, AuthController],
   providers: [UsersService, ProductsService, AuthService],
 })
