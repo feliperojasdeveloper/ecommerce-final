@@ -1,9 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, Res, HttpStatus, HttpCode, Query, UseGuards, ParseUUIDPipe, HttpException } from "@nestjs/common";
 import { ProductsService } from "./products.service";
-import { Product } from "./entities/product.entity";
 import { validateProduct } from "src/utils/validate";
 import { AuthGuard } from "src/guards/auth.guard";
-import * as data from '../utils/data.json'
 import { CreateProductDto } from "./dto/create-product.dto";
 
 @Controller('products')
@@ -47,6 +45,7 @@ export class ProductsController {
     }
 
     @Put(':id')
+    @UseGuards(AuthGuard)
     @HttpCode(HttpStatus.OK)
     updateProduct(@Param('id', ParseUUIDPipe) id: string, @Body() updatedProduct: CreateProductDto) {
         try {

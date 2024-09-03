@@ -1,12 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseUUIDPipe, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseUUIDPipe, HttpException, HttpStatus, UseGuards } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
+import { AuthGuard } from 'src/guards/auth.guard';
 
 @Controller('orders')
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) { }
 
   @Post()
+  @UseGuards(AuthGuard)
   addOrder(@Body() order: CreateOrderDto) {
     try {
       const newOrder = this.ordersService.addOrder(order);
@@ -20,6 +22,7 @@ export class OrdersController {
   }
 
   @Get()
+  @UseGuards(AuthGuard)
   getOrder(@Query('id') id: string) {
     try {
       const order = this.ordersService.getOrder(id);
