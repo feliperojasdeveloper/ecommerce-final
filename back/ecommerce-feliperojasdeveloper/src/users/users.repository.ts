@@ -8,11 +8,14 @@ export class UserRepository {
 
     constructor(@InjectRepository(User) private userRepository: Repository<User>) { }
 
-    async getUsers(page: number = 1, limit: number = 5): Promise<User[]> {
+    async getUsers(page: number = 1, limit: number = 5) {
         const startIndex = (page - 1) * limit;
         const end = startIndex + +limit;
         const users = await this.userRepository.find();
-        return users.slice(startIndex, end);
+        const userPages = users.slice(startIndex, end);
+        const userWithOutPassword = userPages.map(({ password, ...userWithOutPassword }) => userWithOutPassword);
+        return userWithOutPassword;
+
     }
 
     async getUserByEmail(email: string): Promise<User> {
@@ -21,11 +24,14 @@ export class UserRepository {
         });
     }
 
-    async getUserById(id: string): Promise<User> {
-        return await this.userRepository.findOne({
+    async getUserById(id: string) {
+        const user = await this.userRepository.findOne({
             where: { id },
             relations: ['orders']
         });
+
+        const {password, isAdmin, ...userWithOutInformation} = user;
+        return userWithOutInformation
     }
 
     async createUser(user: Partial<User>) {
