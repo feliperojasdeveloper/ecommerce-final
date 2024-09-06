@@ -1,9 +1,11 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Param, ParseUUIDPipe, Post, Put, Query, Req, UseGuards } from "@nestjs/common";
 import { UsersService } from "./users.service";
 import { validateUser } from "src/utils/validate";
-import { AuthGuard } from "src/guards/auth.guard";
+import { AuthGuard } from "src/auth/guards/auth.guard";
 import { CreateUserDto } from "./dto/create-user.dto";
-import { Request } from "express";
+import { Roles } from "src/decorators/roles/roles.decorator";
+import { Role } from "./enum/roles.enum";
+import { RolesGuard } from "src/auth/guards/roles.guard";
 
 @Controller('users')
 export class UsersController {
@@ -12,17 +14,17 @@ export class UsersController {
 
     @Get()
     @HttpCode(HttpStatus.OK)
-    @UseGuards(AuthGuard)
+    @Roles(Role.Admin)
+    @UseGuards(AuthGuard, RolesGuard)
     async getUsers(@Query('page') page: number, @Query('limit') limit: number) {
         try {
-            const users = await this.usersService.getUsers(page, limit);
             if (page && limit) {
-                const userWithOutPassword = users.map(({ password, ...userWithOutPassword }) => userWithOutPassword);
-                return userWithOutPassword;
+                const users = await this.usersService.getUsers(page, limit);
+                return users;
 
             }
-            const userWithOutPassword = users.map(({ password, ...userWithOutPassword }) => userWithOutPassword)
-            return userWithOutPassword;
+            const users = await this.usersService.getUsers(page, limit);
+            return users;
         } catch (error) {
             throw new HttpException({
                 status: HttpStatus.INTERNAL_SERVER_ERROR,
@@ -54,8 +56,7 @@ export class UsersController {
             if (!user) {
                 throw new HttpException('Usuario no encontrado', HttpStatus.NOT_FOUND);
             }
-            const { password, ...userWhitOutPassword } = user;
-            return userWhitOutPassword;
+            return user;
         } catch (error) {
             throw new HttpException('Error al obtener usuario por Id', HttpStatus.INTERNAL_SERVER_ERROR);
         }

@@ -1,8 +1,11 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, Res, HttpStatus, HttpCode, Query, UseGuards, ParseUUIDPipe, HttpException } from "@nestjs/common";
 import { ProductsService } from "./products.service";
 import { validateProduct } from "src/utils/validate";
-import { AuthGuard } from "src/guards/auth.guard";
+import { AuthGuard } from "src/auth/guards/auth.guard";
 import { CreateProductDto } from "./dto/create-product.dto";
+import { Roles } from "src/decorators/roles/roles.decorator";
+import { Role } from "src/users/enum/roles.enum";
+import { RolesGuard } from "src/auth/guards/roles.guard";
 
 @Controller('products')
 export class ProductsController {
@@ -45,7 +48,8 @@ export class ProductsController {
     }
 
     @Put(':id')
-    @UseGuards(AuthGuard)
+    @Roles(Role.Admin)
+    @UseGuards(AuthGuard, RolesGuard)
     @HttpCode(HttpStatus.OK)
     updateProduct(@Param('id', ParseUUIDPipe) id: string, @Body() updatedProduct: CreateProductDto) {
         try {
