@@ -1,11 +1,11 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Param, ParseUUIDPipe, Post, Put, Query, Req, UseGuards } from "@nestjs/common";
 import { UsersService } from "./users.service";
-import { validateUser } from "src/utils/validate";
-import { AuthGuard } from "src/auth/guards/auth.guard";
+import { validateUser } from "../utils/validate";
+import { AuthGuard } from "../auth/guards/auth.guard";
 import { CreateUserDto } from "./dto/create-user.dto";
-import { Roles } from "src/decorators/roles/roles.decorator";
+import { Roles } from "../decorators/roles/roles.decorator";
 import { Role } from "./enum/roles.enum";
-import { RolesGuard } from "src/auth/guards/roles.guard";
+import { RolesGuard } from "../auth/guards/roles.guard";
 
 @Controller('users')
 export class UsersController {
@@ -58,27 +58,11 @@ export class UsersController {
             }
             return user;
         } catch (error) {
-            throw new HttpException('Error al obtener usuario por Id', HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new HttpException('Usuario no encontrado', HttpStatus.NOT_FOUND);
         }
 
     }
 
-    @Post()
-    @HttpCode(HttpStatus.CREATED)
-    createUser(@Body() userCreated: CreateUserDto) {
-        try {
-            if (validateUser(userCreated)) {
-                const user = this.usersService.createUser(userCreated);
-                if (!user) {
-                    throw new HttpException('No se pudo crear el usuario', HttpStatus.BAD_REQUEST);
-                }
-                return user;
-            }
-            throw new HttpException('Datos de usuario inválidos', HttpStatus.BAD_REQUEST);
-        } catch (error) {
-            throw new HttpException('Error al crear usuario', HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
 
     @Put(':id')
     @HttpCode(HttpStatus.OK)

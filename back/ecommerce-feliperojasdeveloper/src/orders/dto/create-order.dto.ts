@@ -1,8 +1,5 @@
-import { Type } from "class-transformer";
 import { ArrayMinSize, IsArray, IsNotEmpty, IsUUID, ValidateNested } from "class-validator";
-import { CreateProductDto } from "src/products/dto/create-product.dto";
-import { ProductDto } from "src/products/dto/product.dto";
-import { Product } from "src/products/entities/product.entity";
+import { Product } from "../../products/entities/product.entity";
 
 export class CreateOrderDto {
     @IsNotEmpty()

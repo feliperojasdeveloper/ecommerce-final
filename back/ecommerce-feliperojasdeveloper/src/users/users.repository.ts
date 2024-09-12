@@ -40,16 +40,15 @@ export class UserRepository {
         return userBd;
     }
 
-    async update(id: string, updatedUser: Partial<User>): Promise<User> {
+    async update(id: string, updatedUser: Partial<User>): Promise<boolean> {
         const userId = await this.userRepository.findOne({
             where: { id }
         })
         if (!userId) {
-            throw new Error('Usuario no encontrado');
+            return false
         }
-        const userUpdated = await this.userRepository.update(id, updatedUser);
-        console.log(userUpdated);
-        return userId;
+        await this.userRepository.update(id, updatedUser);
+        return true;
     }
 
 
