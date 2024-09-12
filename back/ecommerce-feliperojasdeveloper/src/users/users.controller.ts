@@ -18,7 +18,7 @@ export class UsersController {
     @UseGuards(AuthGuard, RolesGuard)
     async getUsers(@Query('page') page: number, @Query('limit') limit: number) {
         try {
-            if (page && limit) {
+            if (page && limit) {                
                 const users = await this.usersService.getUsers(page, limit);
                 return users;
 
