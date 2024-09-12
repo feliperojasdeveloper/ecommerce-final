@@ -1,11 +1,11 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, Res, HttpStatus, HttpCode, Query, UseGuards, ParseUUIDPipe, HttpException } from "@nestjs/common";
 import { ProductsService } from "./products.service";
-import { validateProduct } from "src/utils/validate";
-import { AuthGuard } from "src/auth/guards/auth.guard";
+import { validateProduct } from "../utils/validate";
+import { AuthGuard } from "../auth/guards/auth.guard";
 import { CreateProductDto } from "./dto/create-product.dto";
-import { Roles } from "src/decorators/roles/roles.decorator";
-import { Role } from "src/users/enum/roles.enum";
-import { RolesGuard } from "src/auth/guards/roles.guard";
+import { Roles } from "../decorators/roles/roles.decorator";
+import { Role } from "../users/enum/roles.enum";
+import { RolesGuard } from "../auth/guards/roles.guard";
 
 @Controller('products')
 export class ProductsController {
@@ -62,6 +62,7 @@ export class ProductsController {
             }
             return id;
         } catch (error) {
+            console.log(error.message);
             throw new HttpException('Error al actualizar producto', HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

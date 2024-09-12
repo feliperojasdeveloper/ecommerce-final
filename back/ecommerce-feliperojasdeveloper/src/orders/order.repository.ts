@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
 import { Order } from "./entities/order.entity";
 import { InjectRepository } from "@nestjs/typeorm";
-import { User } from "src/users/entities/user.entity";
+import { User } from "../users/entities/user.entity";
 import { Repository } from "typeorm";
-import { OrderDetail } from "src/order-details/entities/order-detail.entity";
-import { Product } from "src/products/entities/product.entity";
+import { OrderDetail } from "../order-details/entities/order-detail.entity";
+import { Product } from "../products/entities/product.entity";
 
 @Injectable()
 export class OrderRepository {

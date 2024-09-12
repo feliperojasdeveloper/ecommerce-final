@@ -1,5 +1,5 @@
-import { OrderDetail } from "src/order-details/entities/order-detail.entity";
-import { User } from "src/users/entities/user.entity";
+import { OrderDetail } from "../../order-details/entities/order-detail.entity";
+import { User } from "../../users/entities/user.entity";
 import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { v4 as uuid } from 'uuid';
 

@@ -9,7 +9,7 @@ export class AuthGuard implements CanActivate {
         const request = context.switchToHttp().getRequest();
         const token = request.headers.authorization?.split(' ')[1] ?? '';
         if (!token) {
-            throw new UnauthorizedException("Barer Token no encontrado");
+            throw new UnauthorizedException("Baerer Token no encontrado");
         } 
         try {
             const secret = process.env.JWT_SECRET;
