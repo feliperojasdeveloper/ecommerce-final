@@ -2,30 +2,47 @@ name: deploy
 
 on:
   push:
-   branches:
-    - "main"
+    branches:
+      - "main"
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - 
-       name: Checkout
-       uses: actions/checkout@v4
-      -
-       name: Login to docker
-       uses: docker/login-action@v3
-       with: 
-         username: ${{ secrets.DOCKERHUB_USERNAME }}
-         password: ${{ secrets.DOCKERHUB_TOKEN }}
+        name: Checkout
+        uses: actions/checkout@v4
       - 
-       name: Set up Docker Buildx
-       uses: docker/setup-buildx-action@v3
-      -
-       name: Build and push
-       uses: docker/build-push-action@v5
-       with: 
-        context: .
-        file: ./back/ecommerce-feliperojasdeveloper/Dockerfile
-        push: true
-        tags: ${{ secrets.DOCKERHUB_USERNAME }}/ecommerce-final:latest
+        name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'  # Ajusta según la versión de Node.js que uses
+      - 
+        name: Install dependencies
+        run: npm install
+        working-directory: ./back/ecommerce-feliperojasdeveloper  # Ajusta la ruta si es necesario
+      - 
+        name: Cache npm
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      - 
+        name: Login to docker
+        uses: docker/login-action@v3
+        with: 
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - 
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - 
+        name: Build and push
+        uses: docker/build-push-action@v5
+        with: 
+          context: .
+          file: ./back/ecommerce-feliperojasdeveloper/Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/ecommerce-final:latest
