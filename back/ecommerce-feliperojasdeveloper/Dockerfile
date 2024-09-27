@@ -4,7 +4,9 @@ WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm install --verbose
+RUN npm cache clean --force
+
+RUN npm ci --verbose
 
 COPY . .
 
